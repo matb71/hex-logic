@@ -1,4 +1,3 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import './styles.css';
 
 import HexBoard from './HexBoard';
