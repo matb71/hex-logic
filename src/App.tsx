@@ -1,3 +1,4 @@
+import { useState, useMemo, useEffect } from 'react';
 import './styles.css';
 
 import HexBoard from './HexBoard';
@@ -12,25 +13,31 @@ function sleep(ms: number) {
 
 export default function App() {
   // Sélections
-  const [shapeId, setShapeId] = useState(SHAPES[0].id);
+  const [shapeId, setShapeId] = useState<string>(SHAPES[0].id);
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
 
   // Forme courante
-  const shape = useMemo(() => SHAPES.find((s) => s.id === shapeId)!, [shapeId]);
+  const shape = useMemo(
+    () => SHAPES.find((s) => s.id === shapeId)!,
+    [shapeId]
+  );
   const n = shape.cells.length;
   const K = useMemo(() => computeK(n, difficulty), [n, difficulty]);
 
   // Puzzle et état joueur
   const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [verifyMode, setVerifyMode] = useState(false);
+  const [verifyMode, setVerifyMode] = useState<boolean>(false);
 
   // UX
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [won, setWon] = useState(false);
+  const [won, setWon] = useState<boolean>(false);
 
-  const markedBlackCount = useMemo(() => marks.filter((m) => m === 'black').length, [marks]);
+  const markedBlackCount = useMemo(
+    () => marks.filter((m: Mark) => m === 'black').length,
+    [marks]
+  );
 
   async function newPuzzle() {
     setLoading(true);
@@ -38,7 +45,6 @@ export default function App() {
     setVerifyMode(false);
     setWon(false);
 
-    // mini pause pour laisser le rendu afficher "Génération..."
     await sleep(20);
 
     try {
@@ -47,8 +53,12 @@ export default function App() {
       });
       setPuzzle(p);
       setMarks(new Array<Mark>(p.cells.length).fill('unknown'));
-    } catch (e: any) {
-      setError(e?.message ?? 'Erreur lors de la génération du puzzle');
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError('Erreur lors de la génération du puzzle');
+      }
       setPuzzle(null);
       setMarks([]);
     } finally {
@@ -65,7 +75,7 @@ export default function App() {
   function onCycle(i: number) {
     if (!puzzle || won) return;
 
-    setMarks((prev) => {
+    setMarks((prev: Mark[]) => {
       const next = [...prev];
       next[i] = nextMark(next[i]);
 
@@ -83,7 +93,11 @@ export default function App() {
         <div className="controls">
           <label className="ctrl">
             Forme
-            <select value={shapeId} onChange={(e) => setShapeId(e.target.value)} disabled={loading}>
+            <select
+              value={shapeId}
+              onChange={(e) => setShapeId(e.target.value)}
+              disabled={loading}
+            >
               {SHAPES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -131,7 +145,11 @@ export default function App() {
           </label>
         </div>
 
-        {error && <div style={{ marginTop: 10, color: '#dc2626', fontWeight: 700 }}>{error}</div>}
+        {error && (
+          <div style={{ marginTop: 10, color: '#dc2626', fontWeight: 700 }}>
+            {error}
+          </div>
+        )}
       </header>
 
       <main className="main">
@@ -166,4 +184,3 @@ export default function App() {
     </div>
   );
 }
-``

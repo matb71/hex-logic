@@ -20,9 +20,12 @@ function cellStyle(mark: Mark) {
 }
 
 function verifyStroke(flag: ReturnType<typeof getVerifyFlag>) {
-  if (flag === 'wrongBlack') return { stroke: '#dc2626', strokeWidth: 4 }; // rouge
-  if (flag === 'missedBlack') return { stroke: '#f59e0b', strokeWidth: 4 }; // orange
-  return { stroke: undefined as string | undefined, strokeWidth: undefined as number | undefined };
+  if (flag === 'wrongBlack') return { stroke: '#dc2626', strokeWidth: 4 };
+  if (flag === 'missedBlack') return { stroke: '#f59e0b', strokeWidth: 4 };
+  return {
+    stroke: undefined as string | undefined,
+    strokeWidth: undefined as number | undefined,
+  };
 }
 
 export default function HexBoard(props: Props) {
@@ -33,8 +36,8 @@ export default function HexBoard(props: Props) {
 
   const layout = useMemo(() => {
     const pts = cells.map((c) => axialToPixel(c, size));
-    const xs = pts.map(p => p.x);
-    const ys = pts.map(p => p.y);
+    const xs = pts.map((p) => p.x);
+    const ys = pts.map((p) => p.y);
 
     const minX = Math.min(...xs) - size - padding;
     const maxX = Math.max(...xs) + size + padding;
@@ -46,7 +49,7 @@ export default function HexBoard(props: Props) {
 
   return (
     <svg className="board" viewBox={layout.viewBox} role="img" aria-label="Grille hexagonale">
-      {cells.map((cell, i) => {
+      {cells.map((_, i) => {
         const cx = layout.pts[i].x;
         const cy = layout.pts[i].y;
         const poly = hexPolygonPoints(cx, cy, size);
