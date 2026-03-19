@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { Axial } from './hex';
 import { axialToPixel, hexPolygonPoints } from './hex';
 import type { Mark } from './game';
